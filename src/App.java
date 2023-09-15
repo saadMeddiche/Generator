@@ -1,7 +1,7 @@
 import java.nio.file.Files;
 import java.util.Scanner;
 
-import helpers.viewHelper;
+import helpers.ViewHelper;
 
 import java.nio.file.Path;
 import java.io.File;
@@ -9,21 +9,21 @@ import java.io.File;
 public class App {
     public static void main(String[] args) throws Exception {
 
-        viewHelper.clearConsole();
+        ViewHelper.clearConsole();
 
         Scanner scanner = new Scanner(System.in);
 
         String pathName = "C:\\Users\\YouCode\\Desktop\\generate-code\\Generator\\src\\projects\\";
 
-        viewHelper.colorText("Enter The Text :", "red");
+        ViewHelper.colorText("Enter The Text :", "red");
         String content = scanner.nextLine();
         System.out.println();
 
-        viewHelper.colorText("Enter The Folder Path :", "green");
+        ViewHelper.colorText("Enter The Folder Path :", "green");
         String folderName = scanner.nextLine() + "/";
         System.out.println();
 
-        viewHelper.colorText("Enter The File Name :", "yellow");
+        ViewHelper.colorText("Enter The File Name :", "yellow");
         String fileName = scanner.nextLine();
         System.out.println();
 
@@ -40,6 +40,7 @@ public class App {
         Path fullPath = Path.of(pathName + folderName + fileName);
 
         Files.writeString(fullPath, content);
+
     }
 
 }
