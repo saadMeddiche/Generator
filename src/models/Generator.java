@@ -84,7 +84,7 @@ public class Generator {
         repositoryCode += "  this.connection = connection;\n";
         repositoryCode += "}\n\n";
 
-        // Add method
+        // ====================Add method==============================
         repositoryCode += "public void create" + NameOfModel + "(";
 
         // Parameters of function
@@ -94,7 +94,7 @@ public class Generator {
         repositoryCode += "String query = \"INSERT INTO " + NameOfTable + " (";
 
         // Columns
-        for (int i = 0; i < NameOfAttributes.length; i++) {
+        for (int i = 1; i < NameOfAttributes.length; i++) {
 
             String attributeName = NameOfAttributes[i];
 
@@ -107,7 +107,7 @@ public class Generator {
         repositoryCode += ") VALUES (";
 
         // ? ? ? ? ?
-        for (int i = 0; i < NameOfAttributes.length; i++) {
+        for (int i = 1; i < NameOfAttributes.length; i++) {
             repositoryCode += "?";
             if (i < NameOfAttributes.length - 1) {
                 repositoryCode += ", ";
@@ -118,7 +118,8 @@ public class Generator {
 
         repositoryCode += "PreparedStatement preparedStatement = connection.prepareStatement(query);\n";
 
-        for (int i = 0; i < NameOfAttributes.length; i++) {
+        // Set ? with values
+        for (int i = 1; i < NameOfAttributes.length; i++) {
             String attributeName = NameOfAttributes[i];
             String attributeType = TypeOfAttributes[i];
             repositoryCode += "            preparedStatement.set" + BigFirstChar(attributeType) + "(" + (i + 1) + ", "
@@ -126,6 +127,55 @@ public class Generator {
         }
 
         repositoryCode += "            preparedStatement.executeUpdate();\n";
+        repositoryCode += "    }\n\n";
+
+        // ==============================Update method==============================
+        repositoryCode += "    public void update" + NameOfModel + "(";
+        repositoryCode += NameOfModel + " " + NameOfModel.toLowerCase();
+        
+        repositoryCode += ") throws SQLException {\n";
+        repositoryCode += "        String query = \"UPDATE " + NameOfTable + " SET ";
+
+        // Set columns for update
+        for (int i = 1; i < NameOfAttributes.length; i++) {
+            String attributeName = NameOfAttributes[i];
+            repositoryCode += attributeName + "=?";
+            if (i < NameOfAttributes.length - 1) {
+                repositoryCode += ", ";
+            }
+        }
+
+        repositoryCode += " WHERE " + NameOfAttributes[0] + "=?\";\n";
+        repositoryCode += "        PreparedStatement preparedStatement = connection.prepareStatement(query);\n";
+
+        // Set ? with values for update
+        int parameterIndex = 1;
+        for (int i = 1; i < NameOfAttributes.length; i++) {
+            String attributeName = NameOfAttributes[i];
+            String attributeType = TypeOfAttributes[i];
+            repositoryCode += "        preparedStatement.set" + BigFirstChar(attributeType) + "(" + parameterIndex++
+                    + ", "
+                    + NameOfModel.toLowerCase() + ".get" + BigFirstChar(attributeName) + "());\n";
+        }
+        // Set ? for WHERE clause
+        repositoryCode += "        preparedStatement.set" + BigFirstChar(TypeOfAttributes[0]) + "(" + parameterIndex++
+                + ", "
+                + NameOfModel.toLowerCase() + ".get" + BigFirstChar(NameOfAttributes[0]) + "());\n";
+        repositoryCode += "        preparedStatement.executeUpdate();\n";
+        repositoryCode += "    }\n\n";
+
+        // ==============================Delete method==============================
+        repositoryCode += "    public void delete" + NameOfModel + "(";
+        repositoryCode += TypeOfAttributes[0] + " " + NameOfAttributes[0];
+        repositoryCode += ") throws SQLException {\n";
+        repositoryCode += "        String query = \"DELETE FROM " + NameOfTable + " WHERE " + NameOfAttributes[0]
+                + "=?\";\n";
+        repositoryCode += "        PreparedStatement preparedStatement = connection.prepareStatement(query);\n";
+
+        // Set ? for WHERE clause
+        repositoryCode += "        preparedStatement.set" + BigFirstChar(TypeOfAttributes[0]) + "(1, "
+                + NameOfAttributes[0] + ");\n";
+        repositoryCode += "        preparedStatement.executeUpdate();\n";
         repositoryCode += "    }\n\n";
 
         // End
