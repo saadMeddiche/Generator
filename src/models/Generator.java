@@ -132,7 +132,7 @@ public class Generator {
         // ==============================Update method==============================
         repositoryCode += "    public void update" + NameOfModel + "(";
         repositoryCode += NameOfModel + " " + NameOfModel.toLowerCase();
-        
+
         repositoryCode += ") throws SQLException {\n";
         repositoryCode += "        String query = \"UPDATE " + NameOfTable + " SET ";
 
@@ -157,7 +157,7 @@ public class Generator {
                     + ", "
                     + NameOfModel.toLowerCase() + ".get" + BigFirstChar(attributeName) + "());\n";
         }
-        // Set ? for WHERE clause
+        // Set ? for WHERE
         repositoryCode += "        preparedStatement.set" + BigFirstChar(TypeOfAttributes[0]) + "(" + parameterIndex++
                 + ", "
                 + NameOfModel.toLowerCase() + ".get" + BigFirstChar(NameOfAttributes[0]) + "());\n";
@@ -172,10 +172,126 @@ public class Generator {
                 + "=?\";\n";
         repositoryCode += "        PreparedStatement preparedStatement = connection.prepareStatement(query);\n";
 
-        // Set ? for WHERE clause
+        // Set ? for WHERE
         repositoryCode += "        preparedStatement.set" + BigFirstChar(TypeOfAttributes[0]) + "(1, "
                 + NameOfAttributes[0] + ");\n";
         repositoryCode += "        preparedStatement.executeUpdate();\n";
+        repositoryCode += "    }\n\n";
+
+        // ==============================GetAll method==============================
+        repositoryCode += "    public List<" + NameOfModel + "> getAll" + NameOfModel + "s() throws SQLException {\n";
+        repositoryCode += "        List<" + NameOfModel + "> " + NameOfModel.toLowerCase()
+                + "List = new ArrayList<>();\n";
+        repositoryCode += "        String query = \"SELECT * FROM " + NameOfTable + "\";\n";
+        repositoryCode += "        PreparedStatement preparedStatement = connection.prepareStatement(query);\n";
+        repositoryCode += "            ResultSet resultSet = preparedStatement.executeQuery(); \n";
+        repositoryCode += "                while (resultSet.next()) {\n";
+        repositoryCode += "                    " + NameOfModel + " " + NameOfModel.toLowerCase() + " = new "
+                + NameOfModel + "();\n";
+
+        // Set attributes for each record
+        for (int i = 0; i < NameOfAttributes.length; i++) {
+            String attributeName = NameOfAttributes[i];
+            String attributeType = TypeOfAttributes[i];
+            repositoryCode += "                    " + NameOfModel.toLowerCase() + ".set" + BigFirstChar(attributeName)
+                    + "(resultSet.get" + BigFirstChar(attributeType) + "(\"" + attributeName + "\"));\n";
+        }
+
+        repositoryCode += " " + NameOfModel.toLowerCase() + "List.add(" + NameOfModel.toLowerCase() + ");\n";
+
+        repositoryCode += "        }\n";
+        repositoryCode += "        return " + NameOfModel.toLowerCase() + "List;\n";
+        repositoryCode += "    }\n\n";
+
+        // ==============================GetOne method==============================
+        repositoryCode += "    public " + NameOfModel + " getOne" + NameOfModel + "(";
+        repositoryCode += TypeOfAttributes[0] + " " + NameOfAttributes[0];
+        repositoryCode += ") throws SQLException {\n";
+        repositoryCode += "        " + NameOfModel + " " + NameOfModel.toLowerCase() + " = null;\n";
+        repositoryCode += "        String query = \"SELECT * FROM " + NameOfTable + " WHERE " + NameOfAttributes[0]
+                + "=?\";\n";
+        repositoryCode += "        PreparedStatement preparedStatement = connection.prepareStatement(query);\n";
+        repositoryCode += "            preparedStatement.set" + BigFirstChar(TypeOfAttributes[0]) + "(1, "
+                + NameOfAttributes[0] + ");\n";
+        repositoryCode += "            ResultSet resultSet = preparedStatement.executeQuery();\n";
+        repositoryCode += "                if (resultSet.next()) {\n";
+        repositoryCode += "                    " + NameOfModel.toLowerCase() + " = new " + NameOfModel + "();\n";
+
+        // Set attributes for the found record
+        for (int i = 0; i < NameOfAttributes.length; i++) {
+            String attributeName = NameOfAttributes[i];
+            String attributeType = TypeOfAttributes[i];
+            repositoryCode += "                    " + NameOfModel.toLowerCase() + ".set" + BigFirstChar(attributeName)
+                    + "(resultSet.get" + BigFirstChar(attributeType) + "(\"" + attributeName + "\"));\n";
+        }
+
+        repositoryCode += "        }\n";
+        repositoryCode += "        return " + NameOfModel.toLowerCase() + ";\n";
+        repositoryCode += "    }\n\n";
+
+        // ============================== search methods ==============================
+        for (int i = 0; i < NameOfAttributes.length; i++) {
+            String attributeName = NameOfAttributes[i];
+            String attributeType = TypeOfAttributes[i];
+
+            // Search method name
+            String searchMethodName = "search" + NameOfModel + "sBy" + BigFirstChar(attributeName);
+
+            repositoryCode += "    public List<" + NameOfModel + "> " + searchMethodName + "(" + attributeType + " "
+                    + attributeName + ") throws SQLException {\n";
+            repositoryCode += "        List<" + NameOfModel + "> " + NameOfModel.toLowerCase()
+                    + "List = new ArrayList<>();\n";
+            repositoryCode += "        String query = \"SELECT * FROM " + NameOfTable + " WHERE ";
+
+            // Like ? Or =?
+            if (attributeType.equals("String")) {
+                repositoryCode += attributeName + " LIKE ?";
+            } else {
+                repositoryCode += attributeName + "=?";
+            }
+
+            repositoryCode += "\";\n";
+            repositoryCode += "        PreparedStatement preparedStatement = connection.prepareStatement(query);\n";
+            repositoryCode += "            ";
+
+            // With % or without
+            if (attributeType.equals("String")) {
+                repositoryCode += "preparedStatement.setString(1, \"%" + "\" + " + attributeName + " + \"%\");\n";
+            } else {
+                repositoryCode += "preparedStatement.set" + BigFirstChar(attributeType) + "(1, " + attributeName
+                        + ");\n";
+            }
+
+            repositoryCode += "            ResultSet resultSet = preparedStatement.executeQuery();\n";
+            repositoryCode += "                while (resultSet.next()) {\n";
+            repositoryCode += "                    " + NameOfModel + " " + NameOfModel.toLowerCase() + " = new "
+                    + NameOfModel + "();\n";
+
+            // Set attributes for each record
+            for (int j = 0; j < NameOfAttributes.length; j++) {
+                String attrName = NameOfAttributes[j];
+                String attrType = TypeOfAttributes[j];
+                repositoryCode += "                    " + NameOfModel.toLowerCase() + ".set" + BigFirstChar(attrName)
+                        + "(resultSet.get" + BigFirstChar(attrType) + "(\"" + attrName + "\"));\n";
+            }
+
+            repositoryCode += "                    " + NameOfModel.toLowerCase() + "List.add("
+                    + NameOfModel.toLowerCase() + ");\n";
+            repositoryCode += "                }\n";
+            repositoryCode += "        return " + NameOfModel.toLowerCase() + "List;\n";
+            repositoryCode += "    }\n\n";
+        }
+
+        // ==============================GetCount method==============================
+        repositoryCode += "    public int getCount" + NameOfModel + "s() throws SQLException {\n";
+        repositoryCode += "        int count = 0;\n";
+        repositoryCode += "        String query = \"SELECT COUNT(*) AS count FROM " + NameOfTable + "\";\n";
+        repositoryCode += "        PreparedStatement preparedStatement = connection.prepareStatement(query);\n";
+        repositoryCode += "        ResultSet resultSet = preparedStatement.executeQuery();\n";
+        repositoryCode += "                if (resultSet.next()) {\n";
+        repositoryCode += "                    count = resultSet.getInt(\"count\");\n";
+        repositoryCode += "                }\n";
+        repositoryCode += "        return count;\n";
         repositoryCode += "    }\n\n";
 
         // End
