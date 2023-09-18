@@ -14,9 +14,9 @@ public class Generator {
     // "C:\\Users\\Saad\\Desktop\\testing-generated-code\\src\\";
 
     public static void main(String[] args) throws Exception {
-        String NameOfModel = "User";
-        String[] NameOfAttributes = { "id", "name", "email" };
-        String[] TypeOfAttributes = { "int", "String", "String" };
+        String NameOfModel = "Product";
+        String[] NameOfAttributes = { "id", "name", "price" };
+        String[] TypeOfAttributes = { "Integer", "String", "Long" };
 
         generate_crud(NameOfModel, NameOfAttributes, TypeOfAttributes);
         generate_repository(NameOfModel, NameOfAttributes, TypeOfAttributes);
@@ -40,6 +40,7 @@ public class Generator {
         // Fields
         ModelCode += Models.fields(NameOfAttributes, TypeOfAttributes);
 
+        // Constructor
         ModelCode += Models.constructor(NameOfModel, NameOfAttributes, TypeOfAttributes);
 
         // Getters And Setters
@@ -114,10 +115,10 @@ public class Generator {
         serviceCode += Service.constructor(NameOfService, NameOfModel);
 
         // Create method
-        serviceCode += Service.insert(NameOfModel);
+        serviceCode += Service.insert(NameOfModel, NameOfAttributes, TypeOfAttributes);
 
         // Update method
-        serviceCode += Service.update(NameOfModel);
+        serviceCode += Service.update(NameOfModel, NameOfAttributes, TypeOfAttributes);
 
         // Delete method
         serviceCode += Service.delete(NameOfModel, NameOfAttributes, TypeOfAttributes);

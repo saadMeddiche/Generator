@@ -25,10 +25,13 @@ public class Service {
         return string;
     }
 
-    public static String insert(String NameOfModel) {
+    public static String insert(String NameOfModel, String[] NameOfAttributes, String[] TypeOfAttributes) {
 
         String string = "    public void create" + NameOfModel + "(" + NameOfModel + " " + NameOfModel.toLowerCase()
                 + ") throws SQLException {\n";
+
+        string += dynamicValidation(NameOfModel, NameOfAttributes, TypeOfAttributes);
+
         string += "        " + NameOfModel.toLowerCase() + "Repository.create" + NameOfModel + "("
                 + NameOfModel.toLowerCase() + ");\n";
         string += "    }\n\n";
@@ -36,10 +39,13 @@ public class Service {
         return string;
     }
 
-    public static String update(String NameOfModel) {
+    public static String update(String NameOfModel, String[] NameOfAttributes, String[] TypeOfAttributes) {
 
         String string = "    public void update" + NameOfModel + "(" + NameOfModel + " " + NameOfModel.toLowerCase()
                 + ") throws SQLException {\n";
+
+        string += dynamicValidation(NameOfModel, NameOfAttributes, TypeOfAttributes);
+
         string += "        " + NameOfModel.toLowerCase() + "Repository.update" + NameOfModel + "("
                 + NameOfModel.toLowerCase() + ");\n";
         string += "    }\n\n";
@@ -101,4 +107,24 @@ public class Service {
         return string;
     }
 
+    public static String dynamicValidation(String NameOfModel, String[] NameOfAttributes, String[] TypeOfAttributes) {
+        String string = "";
+        string += "        if (" + NameOfModel.toLowerCase() + " == null) {\n";
+        string += "            throw new IllegalArgumentException(\"" + NameOfModel + " cannot be null\");\n";
+        string += "        }\n";
+
+        // Validation for each attribute
+        for (int i = 0; i < NameOfAttributes.length; i++) {
+
+            String attributeName = NameOfAttributes[i];
+
+            string += "        if (" + NameOfModel.toLowerCase() + ".get" + ViewHelper.BigFirstChar(attributeName)
+                    + "() == null) {\n";
+            string += "            throw new IllegalArgumentException(\"" + attributeName + " cannot be null\");\n";
+            string += "        }\n";
+
+        }
+
+        return string;
+    }
 }

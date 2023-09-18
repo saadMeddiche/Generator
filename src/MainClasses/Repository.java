@@ -109,7 +109,7 @@ public class Repository {
                     + NameOfModel.toLowerCase() + ".get" + ViewHelper.BigFirstChar(attributeName) + "());\n";
         }
         // Set ? for WHERE
-        string += "        preparedStatement.set" + ViewHelper.BigFirstChar(TypeOfAttributes[0]) + "("
+        string += "        preparedStatement.set" + detectDesignatedParameter(TypeOfAttributes[0]) + "("
                 + parameterIndex++
                 + ", "
                 + NameOfModel.toLowerCase() + ".get" + ViewHelper.BigFirstChar(NameOfAttributes[0]) + "());\n";
@@ -132,7 +132,7 @@ public class Repository {
         string += "        PreparedStatement preparedStatement = connection.prepareStatement(query);\n";
 
         // Set ? for WHERE
-        string += "        preparedStatement.set" + ViewHelper.BigFirstChar(TypeOfAttributes[0]) + "(1, "
+        string += "        preparedStatement.set" + detectDesignatedParameter(TypeOfAttributes[0]) + "(1, "
                 + NameOfAttributes[0] + ");\n";
         string += "        preparedStatement.executeUpdate();\n";
         string += "    }\n\n";
@@ -159,7 +159,7 @@ public class Repository {
             String attributeType = TypeOfAttributes[i];
             string += "                    " + NameOfModel.toLowerCase() + ".set"
                     + ViewHelper.BigFirstChar(attributeName)
-                    + "(resultSet.get" + ViewHelper.BigFirstChar(attributeType) + "(\"" + attributeName + "\"));\n";
+                    + "(resultSet.get" + detectDesignatedParameter(attributeType) + "(\"" + attributeName + "\"));\n";
         }
 
         string += " " + NameOfModel.toLowerCase() + "List.add(" + NameOfModel.toLowerCase() + ");\n";
@@ -182,7 +182,7 @@ public class Repository {
         string += "        String query = \"SELECT * FROM " + NameOfTable + " WHERE " + NameOfAttributes[0]
                 + "=?\";\n";
         string += "        PreparedStatement preparedStatement = connection.prepareStatement(query);\n";
-        string += "            preparedStatement.set" + ViewHelper.BigFirstChar(TypeOfAttributes[0]) + "(1, "
+        string += "            preparedStatement.set" + detectDesignatedParameter(TypeOfAttributes[0]) + "(1, "
                 + NameOfAttributes[0] + ");\n";
         string += "            ResultSet resultSet = preparedStatement.executeQuery();\n";
         string += "                if (resultSet.next()) {\n";
@@ -194,7 +194,7 @@ public class Repository {
             String attributeType = TypeOfAttributes[i];
             string += "                    " + NameOfModel.toLowerCase() + ".set"
                     + ViewHelper.BigFirstChar(attributeName)
-                    + "(resultSet.get" + ViewHelper.BigFirstChar(attributeType) + "(\"" + attributeName + "\"));\n";
+                    + "(resultSet.get" + detectDesignatedParameter(attributeType) + "(\"" + attributeName + "\"));\n";
         }
 
         string += "        }\n";
@@ -252,7 +252,7 @@ public class Repository {
             if (attributeType.equals("String")) {
                 string += "preparedStatement.setString(1, \"%" + "\" + " + attributeName + " + \"%\");\n";
             } else {
-                string += "preparedStatement.set" + ViewHelper.BigFirstChar(attributeType) + "(1, " + attributeName
+                string += "preparedStatement.set" + detectDesignatedParameter(attributeType) + "(1, " + attributeName
                         + ");\n";
             }
 
@@ -267,7 +267,7 @@ public class Repository {
                 String attrType = TypeOfAttributes[j];
                 string += "                    " + NameOfModel.toLowerCase() + ".set"
                         + ViewHelper.BigFirstChar(attrName)
-                        + "(resultSet.get" + ViewHelper.BigFirstChar(attrType) + "(\"" + attrName + "\"));\n";
+                        + "(resultSet.get" + detectDesignatedParameter(attrType) + "(\"" + attrName + "\"));\n";
             }
 
             string += "                    " + NameOfModel.toLowerCase() + "List.add("
@@ -278,5 +278,14 @@ public class Repository {
         }
 
         return string;
+    }
+
+    public static String detectDesignatedParameter(String type) {
+
+        if (type.equals("Integer")) {
+            return "Int";
+        }
+
+        return ViewHelper.BigFirstChar(type);
     }
 }
