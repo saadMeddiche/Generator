@@ -40,6 +40,8 @@ public class Generator {
         // Fields
         ModelCode += Models.fields(NameOfAttributes, TypeOfAttributes);
 
+        ModelCode += Models.constructor(NameOfModel, NameOfAttributes, TypeOfAttributes);
+
         // Getters And Setters
         ModelCode += Models.gettersAndSetters(NameOfAttributes, TypeOfAttributes);
 
