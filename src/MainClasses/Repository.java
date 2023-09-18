@@ -1,4 +1,4 @@
-package models;
+package MainClasses;
 
 import helpers.ViewHelper;
 
@@ -22,7 +22,7 @@ public class Repository {
         String string = "public " + NameOfRepository + "(Connection connection) {\n";
         string += "  this.connection = connection;\n";
         string += "}\n\n";
-        
+
         return string;
     }
 

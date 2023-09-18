@@ -1,8 +1,9 @@
-package models;
+package MainClasses;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import helpers.ViewHelper;
 
 public class Generator {
 
@@ -19,6 +20,7 @@ public class Generator {
 
         generate_crud(NameOfModel, NameOfAttributes, TypeOfAttributes);
         generate_repository(NameOfModel, NameOfAttributes, TypeOfAttributes);
+        generate_service(NameOfModel, NameOfAttributes, TypeOfAttributes);
     }
 
     public static void generate_crud(String NameOfModel, String[] NameOfAttributes, String[] TypeOfAttributes)
@@ -90,6 +92,50 @@ public class Generator {
         repositoryCode += "}\n";
 
         create_file(projectPath, "repositories/", NameOfRepository + ".java", repositoryCode);
+    }
+
+    public static void generate_service(String NameOfModel, String[] NameOfAttributes, String[] TypeOfAttributes)
+            throws Exception {
+
+        String NameOfService = NameOfModel + "Service";
+
+        // Importations
+        String serviceCode = Service.importation(NameOfModel);
+
+        // Start
+        serviceCode += "public class " + NameOfService + " {\n";
+
+        // Fields
+        serviceCode += "    private " + NameOfModel + "Repository " + NameOfModel.toLowerCase() + "Repository;\n\n";
+
+        // Constructor
+        serviceCode += Service.constructor(NameOfService, NameOfModel);
+
+        // Create method
+        serviceCode += Service.insert(NameOfModel);
+
+        // Update method
+        serviceCode += Service.update(NameOfModel);
+
+        // Delete method
+        serviceCode += Service.delete(NameOfModel, NameOfAttributes, TypeOfAttributes);
+
+        // Search methods for each attribute
+        serviceCode += Service.search(NameOfModel, NameOfAttributes, TypeOfAttributes);
+
+        // GetAll method
+        serviceCode += Service.getAll(NameOfModel);
+
+        // GetOne method
+        serviceCode += Service.getOne(NameOfModel, NameOfAttributes, TypeOfAttributes);
+
+        // Count method
+        serviceCode += Service.getCount(NameOfModel);
+
+        // End
+        serviceCode += "}\n";
+
+        create_file(projectPath, "services/", NameOfService + ".java", serviceCode);
     }
 
     public static void create_file(String projectPath, String folderName, String fileName, String content)

@@ -1,10 +1,10 @@
-package models;
+package MainClasses;
 
 import helpers.ViewHelper;
 
 public class Models {
-    public static String fields(String[] NameOfAttributes, String[] TypeOfAttributes) {
 
+    public static String fields(String[] NameOfAttributes, String[] TypeOfAttributes) {
         String string = "";
 
         for (int i = 0; i < NameOfAttributes.length; i++) {
