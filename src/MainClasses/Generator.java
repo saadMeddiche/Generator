@@ -91,6 +91,9 @@ public class Generator {
         // ==============================GetCount method==============================
         repositoryCode += Repository.getCount(NameOfTable, NameOfModel, NameOfAttributes, TypeOfAttributes);
 
+        // ==============================CheckIfExist method==============================
+        repositoryCode += Repository.checkIfExist(NameOfTable, NameOfModel, NameOfAttributes, TypeOfAttributes);
+
         // End
         repositoryCode += "}\n";
 

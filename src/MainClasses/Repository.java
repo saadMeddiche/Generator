@@ -280,6 +280,28 @@ public class Repository {
         return string;
     }
 
+    public static String checkIfExist(String NameOfTable, String NameOfModel, String[] NameOfAttributes,
+            String[] TypeOfAttributes) {
+
+        String string = "";
+
+        string += "    public boolean checkIf" + NameOfModel + "Exist(Integer id) throws SQLException {\n";
+        string += "         Boolean exist = false;\n";
+        string += "         String query = \"Select * FROM " + NameOfTable + " WHERE id=?\";\n";
+        string += "         PreparedStatement preparedStatement = connection.prepareStatement(query);\n";
+        string += "         preparedStatement.setInt(1, id);\n";
+        string += "         ResultSet resultSet = preparedStatement.executeQuery();\n";
+        string += "         if (resultSet.next()) { \n";
+        string += "          int count = resultSet.getInt(1);\n";
+        string += "          exist = count > 0;\n";
+        string += "         }\n";
+        string += "         return exist;";
+        string += "    }\n";
+
+        return string;
+
+    }
+
     public static String detectDesignatedParameter(String type) {
 
         if (type.equals("Integer")) {

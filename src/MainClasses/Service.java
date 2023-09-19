@@ -30,7 +30,7 @@ public class Service {
         String string = "    public void create" + NameOfModel + "(" + NameOfModel + " " + NameOfModel.toLowerCase()
                 + ") throws SQLException {\n";
 
-        string += dynamicValidation(NameOfModel, NameOfAttributes, TypeOfAttributes);
+        string += objectValidation(NameOfModel, NameOfAttributes, TypeOfAttributes);
 
         string += "        " + NameOfModel.toLowerCase() + "Repository.create" + NameOfModel + "("
                 + NameOfModel.toLowerCase() + ");\n";
@@ -44,7 +44,7 @@ public class Service {
         String string = "    public void update" + NameOfModel + "(" + NameOfModel + " " + NameOfModel.toLowerCase()
                 + ") throws SQLException {\n";
 
-        string += dynamicValidation(NameOfModel, NameOfAttributes, TypeOfAttributes);
+        string += objectValidation(NameOfModel, NameOfAttributes, TypeOfAttributes);
 
         string += "        " + NameOfModel.toLowerCase() + "Repository.update" + NameOfModel + "("
                 + NameOfModel.toLowerCase() + ");\n";
@@ -57,6 +57,7 @@ public class Service {
 
         String string = "    public void delete" + NameOfModel + "(" + TypeOfAttributes[0] + " " + NameOfAttributes[0]
                 + ") throws SQLException {\n";
+        string += attribuValidation(NameOfModel, NameOfAttributes[0]);
         string += "        " + NameOfModel.toLowerCase() + "Repository.delete" + NameOfModel + "("
                 + NameOfAttributes[0] + ");\n";
         string += "    }\n\n";
@@ -76,6 +77,7 @@ public class Service {
     public static String getOne(String NameOfModel, String[] NameOfAttributes, String[] TypeOfAttributes) {
         String string = "    public " + NameOfModel + " getOne" + NameOfModel + "(" + TypeOfAttributes[0] + " "
                 + NameOfAttributes[0] + ") throws SQLException {\n";
+        string += attribuValidation(NameOfModel, NameOfAttributes[0]);
         string += "        return " + NameOfModel.toLowerCase() + "Repository.getOne" + NameOfModel + "("
                 + NameOfAttributes[0] + ");\n";
         string += "    }\n\n";
@@ -107,7 +109,7 @@ public class Service {
         return string;
     }
 
-    public static String dynamicValidation(String NameOfModel, String[] NameOfAttributes, String[] TypeOfAttributes) {
+    public static String objectValidation(String NameOfModel, String[] NameOfAttributes, String[] TypeOfAttributes) {
         String string = "";
         string += "        if (" + NameOfModel.toLowerCase() + " == null) {\n";
         string += "            throw new IllegalArgumentException(\"" + NameOfModel + " cannot be null\");\n";
@@ -124,6 +126,17 @@ public class Service {
             string += "        }\n";
 
         }
+
+        return string;
+    }
+
+    public static String attribuValidation(String NameOfModel, String attributeName) {
+
+        String string = "";
+
+        string += "        if (!" + NameOfModel.toLowerCase() + "Repository.checkIf" + NameOfModel + "Exist(id)) {\n";
+        string += "            throw new IllegalArgumentException(\"" + NameOfModel + " do not exist\");\n";
+        string += "        }\n";
 
         return string;
     }
